@@ -3,9 +3,11 @@ package com.document.user.security;
 import com.document.user.entity.UserRoles;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.Jwts.SIG;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +27,7 @@ public class JwtUtils {
     public static final String AUTH_HEADER = "Authorization";
     private final String PREFIX_BEARER = "Bearer ";
     private final int EXPIRE_TIME;
-    private final Key key;
+    private final SecretKey key;
 
     public JwtUtils(
             @Value("${jwt.access-expiration}") String time,
@@ -41,12 +43,15 @@ public class JwtUtils {
     // 토큰 생성
     public String generateToken(String username, UserRoles roles) {
         Date currentTime = new Date();
+
         return PREFIX_BEARER + Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(currentTime)
+                .subject(username)
+                .issuedAt(currentTime)
                 .claim("Role", roles)
-                .setExpiration(new Date(currentTime.getTime() + EXPIRE_TIME))
-                .signWith(key, SignatureAlgorithm.HS512)
+                .expiration(new Date(currentTime.getTime() + EXPIRE_TIME))
+//                .signWith(key, SignatureAlgorithm.ES512)
+//                .signWith(SIG.HS512.key().build(), SIG.HS512)
+                .signWith(key)
                 .compact();
     }
 
@@ -62,7 +67,8 @@ public class JwtUtils {
     // 토큰 검증
     public boolean checkValidJwtToken(String jwtToken) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jwtToken);
+//            Jwts.parser().setSigningKey(key).build().parseClaimsJws(jwtToken);
+            Jwts.parser().verifyWith(key).build().parseSignedClaims(jwtToken);
             return true;
         } catch(Exception e){
             log.error("에러 원인 : {} 에러 설명 : {}", e.getCause(), e.getMessage());
@@ -72,7 +78,8 @@ public class JwtUtils {
 
     // 토큰에서 body 갖고 오기
     public Claims getBodyFromJwt(String jwtToken) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jwtToken).getBody();
+//        return Jwts.parser().setSigningKey(key).build().parseClaimsJws(jwtToken).getBody();
+        return Jwts.parser().verifyWith(key).build().parseSignedClaims(jwtToken).getPayload();
     }
 
 }
