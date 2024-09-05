@@ -46,7 +46,7 @@ public class UserController {
     public ResponseEntity<?> deleteUsersById(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        // 삭제는 추후 구현
+        // TODO: 삭제는 추후 구현
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
