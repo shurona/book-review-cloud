@@ -1,0 +1,20 @@
+server:
+  port: 19094
+
+spring:
+  application:
+    name: review-service
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/Documents/java-workspace/my-project/database-files/my-own-test
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+# eureka 설정
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/
