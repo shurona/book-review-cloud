@@ -1,0 +1,11 @@
+rootProject.name = 'shrona'
+
+// application
+include 'application:gateway'
+include 'application:user'
+include 'application:book'
+include 'application:review'
+
+
+// common
+include 'infra:server'

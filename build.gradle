@@ -1,0 +1,115 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.2'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'com.document'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+// 각 모듈들에 공통적으로 적용할 예정
+subprojects {
+
+    bootJar.enabled = false // 현재 모듈의 jar 파일을 생성하지 않음
+    jar.enabled = true // 현재 모듈의 jar 파일을 생성
+
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    // application 아래에 있는 모듈들 버전 관리
+    if (project.path.startsWith(':application:') || project.path.startsWith(':infra:')) {
+        ext {
+            set('springCloudVersion', "2023.0.3")
+        }
+
+        dependencyManagement {
+            imports {
+                mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+            }
+
+        }
+    }
+
+    if (project.name == 'server') {
+        dependencies {
+            //eureka server
+            implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
+        }
+
+    }
+
+    // 특정 application 모듈에만 적용할 종속성
+    if (project.path.startsWith(':application:')) {
+        dependencies {
+            //eureka client
+            implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+            // openFeign
+            implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+            // data-jpa
+            implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+            //validation
+            implementation 'org.springframework.boot:spring-boot-starter-validation'
+            // h2
+            runtimeOnly 'com.h2database:h2'
+
+        }
+    }
+
+    dependencies {
+        //web
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+
+        // lombok
+        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
+
+        // test
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    }
+
+
+    tasks.named('test') {
+        useJUnitPlatform()
+    }
+
+    // bootJar 설정 비활성화
+    if (project.name == 'infra' || project.name == 'application') {
+        bootJar.enabled = false
+    }
+
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+//spring boot를 boot에서 의존성을 갖고 가는 게 정신건강에 좋다
+// runnable 모듈 / infra ///
+// 외부 요청 // client 곳에다가 따로 만들어 놓는다. => application이 client에 의존하게 한다.
+// support // logging monitoring
+
+// 공통 모듈
+// 예외, 값객체, Address, JPA => 순수한 자바 라이브러리만 사용하는게 Best
+
+ext {
+    set('springCloudVersion', "2023.0.3")
+}
+
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
