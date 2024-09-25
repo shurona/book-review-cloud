@@ -1,0 +1,24 @@
+server:
+  port: 19092
+#
+#spring.datasource.url=jdbc:h2:mem:test
+spring:
+  cloud:
+    discovery:
+      enabled: false
+  application:
+    name: user-service
+  datasource:
+    url: jdbc:h2:mem:test
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  # jwt를 위한 기능
+
+jwt:
+  access-expiration: 3600000
+  secret-key: aGVsbG9qd3RzcHJpbmdoZWxsb2p3dHNwcmluZ2hlbGxvand0c3ByaW5naGVsbG9qd3RzcHJpbmdoZWxsb2p3dHNwcmluZ2hlbGxvand0c3ByaW5n
