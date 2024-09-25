@@ -10,8 +10,12 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
+ext {
+    APP_CORE = ":core:app-core"
+}
 
+dependencies {
+    implementation project(APP_CORE)
 }
 
 tasks.named('test') {

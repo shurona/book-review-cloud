@@ -5,17 +5,17 @@ plugins {
 group = 'com.document'
 version = '0.0.1-SNAPSHOT'
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
-}
-
 repositories {
     mavenCentral()
 }
 
+ext {
+    APP_CORE = ":core:app-core"
+}
+
 dependencies {
+
+    implementation project(APP_CORE)
 
     // security
     implementation 'org.springframework.boot:spring-boot-starter-security'

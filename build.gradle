@@ -7,27 +7,29 @@ plugins {
 group = 'com.document'
 version = '0.0.1-SNAPSHOT'
 
+// 프로젝트에 사용되는 종속 라이브러리를 갖고 오기 위한 설정
 repositories {
     mavenCentral()
 }
 
+// 자바 버전
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
+bootJar.enabled = false // 현재 모듈의 jar 파일을 생성하지 않음
+jar.enabled = false
+
 // 각 모듈들에 공통적으로 적용할 예정
 subprojects {
-
-    bootJar.enabled = false // 현재 모듈의 jar 파일을 생성하지 않음
-    jar.enabled = true // 현재 모듈의 jar 파일을 생성
 
     apply plugin: 'java'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
 
-    // application 아래에 있는 모듈들 버전 관리
+    // application 및 infra 아래에 있는 모듈들 버전 관리
     if (project.path.startsWith(':application:') || project.path.startsWith(':infra:')) {
         ext {
             set('springCloudVersion', "2023.0.3")
@@ -41,6 +43,7 @@ subprojects {
         }
     }
 
+    // 서버 설정
     if (project.name == 'server') {
         dependencies {
             //eureka server
@@ -56,8 +59,6 @@ subprojects {
             implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
             // openFeign
             implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-            // data-jpa
-            implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
             //validation
             implementation 'org.springframework.boot:spring-boot-starter-validation'
             // h2
@@ -66,6 +67,7 @@ subprojects {
         }
     }
 
+    // 공통 라이브러리 설정
     dependencies {
         //web
         implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -85,7 +87,7 @@ subprojects {
     }
 
     // bootJar 설정 비활성화
-    if (project.name == 'infra' || project.name == 'application') {
+    if (project.name == 'infra' || project.name == 'application' || project.name == 'core') {
         bootJar.enabled = false
     }
 
