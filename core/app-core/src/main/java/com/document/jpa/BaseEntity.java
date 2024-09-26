@@ -1,10 +1,11 @@
-package document.jpa;
+package com.document.jpa;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 import lombok.Getter;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -20,6 +21,7 @@ public abstract class BaseEntity {
     protected LocalDateTime createdAt;
 
     @Column(name = "created_by", updatable = false)
+    @CreatedBy
     protected Long createdUser;
 
     @Column(name = "updated_at")
